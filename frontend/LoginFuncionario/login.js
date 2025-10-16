@@ -3,12 +3,16 @@ const btnCadastrar = document.getElementById("btnCadastrar");
 const senhaInput = document.getElementById("senha");
 const togglePassword = document.getElementById("togglePassword");
 
+// Impede o botão de tirar o foco do input (evita bug visual)
+togglePassword.addEventListener("mousedown", (e) => e.preventDefault());
+
 // Mostrar/esconder senha
 togglePassword.addEventListener("click", function () {
   const type = senhaInput.getAttribute("type") === "password" ? "text" : "password";
   senhaInput.setAttribute("type", type);
-  this.textContent = type === "password" ? "👁" : "🙈";
+  this.textContent = type === "password" ? "🙈" : "🙈";
 });
+
 
 // Enviar login
 loginForm.addEventListener("submit", async (e) => {
@@ -43,7 +47,7 @@ if (data.sucesso) {
   document.cookie = `usuarioLogado=${encodeURIComponent(JSON.stringify(data.usuario))}; path=/; max-age=3600`;
 }
 
-  window.location.href = "../3TelaPrincipal/menu.html";
+  window.location.href = "../MenuFuncionario/menufuncionario.html";
 } else {
   alert(data.erro || "Credenciais inválidas");
 }
@@ -53,9 +57,3 @@ if (data.sucesso) {
   }
 });
 
-
-
-// Ir para cadastro
-btnCadastrar.addEventListener("click", () => {
-  window.location.href = "../2CadastroCliente/CadastroCliente.html"; // ajuste conforme sua estrutura
-});

@@ -79,7 +79,18 @@ exports.criarPessoa = async (req, res) => {
 exports.atualizarPessoa = async (req, res) => {
   try {
     const { id } = req.params;
-    const { cpfpessoa, nomepessoa, emailpessoa, senhapessoa, enderecopessoa } = req.body;
+    let { cpfpessoa, nomepessoa, emailpessoa, senhapessoa, enderecopessoa } = req.body;
+
+    // busca a senha atual
+    const atual = await query('SELECT senhapessoa FROM pessoa WHERE idpessoa = $1', [id]);
+    if (atual.rows.length === 0) {
+      return res.status(404).json({ erro: "Pessoa não encontrada" });
+    }
+
+    // se o campo senha veio vazio, mantém a atual
+    if (!senhapessoa) {
+      senhapessoa = atual.rows[0].senhapessoa;
+    }
 
     const result = await query(
       `UPDATE pessoa
@@ -89,15 +100,13 @@ exports.atualizarPessoa = async (req, res) => {
       [cpfpessoa || null, nomepessoa, emailpessoa, senhapessoa, enderecopessoa || null, id]
     );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ erro: "Pessoa não encontrada" });
-    }
     res.json(result.rows[0]);
   } catch (err) {
     console.error("Erro ao atualizar pessoa:", err);
     res.status(500).json({ erro: "Erro interno ao atualizar pessoa" });
   }
 };
+
 
 // ================== DELETAR ==================
 exports.deletarPessoa = async (req, res) => {

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>BePlant | Painel do Funcionário</title>
+  <link rel="stylesheet" href="menufuncionario.css">
+</head>
+
+<body>
+  <header>
+    <h1>🌿 Painel do Funcionário - BePlant</h1>
+    <div class="usuario-box">
+      <span id="nomeFuncionario">Maria Gerente</span>
+      <button id="btnSair" onclick="logout()">Sair</button>
+    </div>
+  </header>
+
+  <nav class="nav">
+    <ul class="nav__menu">
+      <li class="nav__menu-item"><a href="#">Dashboard</a></li>
+
+      <li class="nav__menu-item">
+        <a href="#">Cadastros</a>
+        <ul class="nav__submenu">
+          <li><a href="../TelaGerenciamento/pessoa/pessoa.html">Pessoa</a></li>
+    <li><a href="../TelaGerenciamento/produto/produto.html">Produto</a></li>
+    <li><a href="../TelaGerenciamento/cargo/cargo.html">Cargo</a></li>
+    <li><a href="../TelaGerenciamento/categoria/categoria.html">Categoria</a></li>
+        </ul>
+      </li>
+
+      <li class="nav__menu-item">
+        <a href="#">Relatórios</a>
+        <ul class="nav__submenu">
+          <li><a href="#">Vendas</a></li>
+          <li><a href="#">Estoque</a></li>
+          <li><a href="#">Clientes</a></li>
+        </ul>
+      </li>
+
+      <li class="nav__menu-item"><a href="#">Configurações</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <section class="conteudo">
+      <h2>Bem-vindo(a), funcionário!</h2>
+      <p>Escolha uma das opções do menu acima para gerenciar o sistema BePlant.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 BePlant - Gestão Sustentável</p>
+  </footer>
+
+  <script src="menufuncionario.js"></script>
+</body>
+</html>

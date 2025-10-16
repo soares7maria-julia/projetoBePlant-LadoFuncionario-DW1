@@ -1,6 +1,6 @@
 const { query } = require('../database');
 
-// ================== CADASTRO ==================
+
 // ================== CADASTRO ==================
 exports.cadastrar = async (req, res) => {
   try {
@@ -65,27 +65,32 @@ exports.login = async (req, res) => {
       return res.status(400).json({ erro: "Email e senha são obrigatórios" });
     }
 
+    // 🔹 Verifica se a pessoa existe E é funcionária
     const result = await query(
-      "SELECT idpessoa, nomepessoa, emailpessoa FROM pessoa WHERE emailpessoa = $1 AND senhapessoa = $2",
+      `SELECT p.idpessoa, p.nomepessoa, p.emailpessoa
+       FROM pessoa p
+       INNER JOIN funcionario f ON f.idpessoa = p.idpessoa
+       WHERE p.emailpessoa = $1 AND p.senhapessoa = $2`,
       [email, senha]
     );
 
     if (result.rows.length === 0) {
-      return res.status(401).json({ sucesso: false, erro: "Credenciais inválidas" });
+      return res
+        .status(401)
+        .json({ sucesso: false, erro: "Usuário não encontrado ou não é funcionário." });
     }
 
     const usuario = result.rows[0];
 
-// 🔹 Grava cookie no navegador
-res.cookie("usuarioLogado", JSON.stringify(usuario), {
-  httpOnly: false, // precisa ser false porque seu carrinho.js lê o cookie no navegador
-  maxAge: 24 * 60 * 60 * 1000, // 1 dia
-  path: "/"
-});
+    // 🔹 Grava cookie no navegador
+    res.cookie("usuarioLogado", JSON.stringify(usuario), {
+      httpOnly: false, // precisa ser false porque o front lê o cookie
+      maxAge: 24 * 60 * 60 * 1000, // 1 dia
+      path: "/"
+    });
 
-// 🔹 Continua retornando no body também (caso queira usar no front)
-res.json({ sucesso: true, usuario });
-
+    // 🔹 Retorna também no corpo da resposta
+    res.json({ sucesso: true, usuario });
 
   } catch (err) {
     console.error("Erro no login:", err);
