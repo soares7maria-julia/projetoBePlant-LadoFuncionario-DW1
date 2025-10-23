@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRUD - Pedido</title>
+  <link rel="stylesheet" href="./pesquisaDinamicaStyle.css">
+  <link rel="stylesheet" href="./pedido.css">
+</head>
+
+<body>
+  <header>
+    <h1>CRUD Pedido</h1>
+  </header>
+
+  <main>
+    <section class="form-section">
+      <h2>Cadastro de Pedido</h2>
+
+      <form id="pedidoForm">
+        <!-- Barra de busca por ID -->
+        <div class="search-container">
+          <label for="searchId">Buscar por ID:</label>
+          <div class="search-input-group">
+            <input type="number" id="searchId" placeholder="Digite o ID para buscar">
+            <button type="button" id="btnBuscar">🔍 Buscar</button>
+            <button type="button" id="btnIncluir" class="btn-primary">Incluir</button>
+            <button type="button" id="btnAlterar" class="btn-secondary" style="display: none;">Alterar</button>
+            <button type="button" id="btnExcluir" class="btn-danger" style="display: none;">Excluir</button>
+            <button type="button" id="btnSalvar" class="btn-save" style="display: none;">Salvar</button>
+            <button type="button" id="btnCancelar" class="btn-cancel">Cancelar</button>
+          </div>
+        </div>
+
+        <!-- Dados do Pedido -->
+        <h2>Dados do Pedido</h2>
+
+        <div class="form-group">
+          <label for="data_pedido">Data do Pedido:</label>
+          <input type="date" id="data_pedido" name="data_pedido" required>
+        </div>
+
+        <!-- Busca dinâmica Cliente -->
+        <div class="form-group">
+          <label for="cliente_pessoa_cpf_pessoa">Cliente:</label>
+          <div class="search-bar-container">
+            <select id="searchType" class="search-select">
+              <option value="cpf">CPF</option>
+              <option value="nome">Nome</option>
+            </select>
+            <input type="text" id="cliente_pessoa_cpf_pessoa" name="cliente_pessoa_cpf_pessoa"
+              placeholder="Digite o CPF ou Nome do cliente..." onfocus="buscaDinamica()">
+            <ul id="resultsList" class="results-list"></ul>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="funcionario_pessoa_cpf_pessoa">Funcionário (CPF):</label>
+          <input type="number" id="funcionario_pessoa_cpf_pessoa" name="funcionario_pessoa_cpf_pessoa"
+            placeholder="Digite o CPF do funcionário..." required>
+        </div>
+      </form>
+    </section>
+
+    <!-- Itens do Pedido -->
+    <section class="list-section">
+      <h2>Itens do Pedido</h2>
+
+      <div class="button-group">
+        <button type="button" id="btnAdicionarItem" onclick="adicionarItem()" class="btn-secondary btn-small">
+          ➕ Adicionar Item
+        </button>
+      </div>
+
+      <div class="table-container">
+        <table id="itensTable">
+          <thead>
+            <tr>
+              <th>ID Pedido</th>
+              <th>ID Produto</th>
+              <th>Produto</th>
+              <th>Quantidade</th>
+              <th>Preço Unitário</th>
+              <th>Subtotal</th>
+              <th>Salvar</th>
+              <th>Excluir</th>
+            </tr>
+          </thead>
+          <tbody id="itensTableBody">
+            <!-- Itens serão carregados dinamicamente -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+
+  <div id="messageContainer" class="message-container"></div>
+
+  <script src="./pesquisaDinamicaCliente.js"></script>
+  <script src="./pedido.js" defer></script>
+</body>
+</html>

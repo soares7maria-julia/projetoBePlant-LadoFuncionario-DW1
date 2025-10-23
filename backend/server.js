@@ -78,9 +78,7 @@ app.use(cookieParser());
 
 // só mexa nessa parte
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Importando as rotas
-//const loginRoutes = require('./routes/loginRoutes');
-//app.use('/login', loginRoutes);
+
 
 const menuRoutes = require('./routes/menuRoutes');
 app.use('/menu', menuRoutes);
@@ -108,6 +106,13 @@ app.use('/produto', produtoRoutes);
 
 const carrinhoRoutes = require("./routes/carrinhoRoutes");
 app.use("/api/carrinho", carrinhoRoutes);
+
+const pedidoRoutes = require('./routes/pedidoRoutes');
+app.use('/pedido', pedidoRoutes);
+
+const pedidoRoutes = require('./routes/pedidoItemRoutes');
+app.use('/pedido_item', pedidoItemRoutes);
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
