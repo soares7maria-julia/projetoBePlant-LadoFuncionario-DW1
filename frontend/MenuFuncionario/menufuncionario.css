@@ -21,7 +21,7 @@ body {
 }
 /* ====== CABEÇALHO ====== */
 header {
-  background: linear-gradient(90deg, #46c091, #388e6d);
+  background: linear-gradient(90deg, #2fb990, #44ad85);
   color: white;
   display: flex;
   justify-content: space-between;

@@ -4,6 +4,39 @@ const cookieParser = require('cookie-parser');
 const path = require('path');
 
 const app = express();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// CORS configurado corretamente (versão compatível com qualquer navegador)
+const allowedOrigins = [
+  'http://127.0.0.1:5503',
+  'http://localhost:5503',
+  'http://127.0.0.1:3001',
+  'http://localhost:3001'
+];
+
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  } else {
+    // fallback seguro para não quebrar requisições locais
+    res.header('Access-Control-Allow-Origin', '*');
+  }
+
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+
+
 
 // 🔧 Habilita CORS ANTES de tudo
 /*
@@ -15,41 +48,20 @@ app.use(cors({
 }));
 */
 
-
-
-const whitelist = [
+  const whitelist = [
   'http://127.0.0.1:5500',
   'http://localhost:5500',
   'http://127.0.0.1:5501',
   'http://localhost:5501',
   'http://127.0.0.1:5502',
   'http://localhost:5502',
+  'http://127.0.0.1:5503', // ✅ ADICIONE ESTA LINHA
+  'http://localhost:5503', // ✅ E ESTA
+  'http://127.0.0.1:5504', // (opcional)
+  'http://localhost:5504', // (opcional)
   'http://localhost:3001',
   'http://127.0.0.1:3001'
 ];
-
-// ⚙️ Configuração do CORS
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || whitelist.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Origem não permitida pelo CORS'));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-};
-
-// 🧩 Aplica o CORS em todas as rotas
-app.use(cors(corsOptions));
-
-
-
-// 🔧 Middleware pra JSON (algumas versões do Express precisam)
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // Configurações de pasta
 app.use('/images', express.static(path.join(__dirname, 'images')));
@@ -110,7 +122,7 @@ app.use("/api/carrinho", carrinhoRoutes);
 const pedidoRoutes = require('./routes/pedidoRoutes');
 app.use('/pedido', pedidoRoutes);
 
-const pedidoRoutes = require('./routes/pedidoItemRoutes');
+const pedidoItemRoutes = require('./routes/pedido_itemRoutes');
 app.use('/pedido_item', pedidoItemRoutes);
 
 

@@ -1,71 +1,19 @@
 const { query } = require('../database');
 
-
-// ================== CADASTRO ==================
-exports.cadastrar = async (req, res) => {
-  try {
-    const { nome, email, senha, cpf, endereco } = req.body;
-
-    if (!nome || !email || !senha || !cpf || !endereco) {
-      return res.status(400).json({ erro: "Nome, email, senha, CPF e endereço são obrigatórios" });
-    }
-
-    // Verifica duplicados
-    const check = await query(
-      "SELECT idpessoa FROM pessoa WHERE emailpessoa = $1 OR cpfpessoa = $2",
-      [email, cpf]
-    );
-
-    if (check.rows.length > 0) {
-      return res.status(400).json({ erro: "Email ou CPF já estão em uso" });
-    }
-
-    // Cria pessoa
-    const result = await query(
-      `INSERT INTO pessoa (cpfpessoa, nomepessoa, emailpessoa, senhapessoa, enderecopessoa)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING idpessoa, nomepessoa, emailpessoa, cpfpessoa, enderecopessoa`,
-      [cpf, nome, email, senha, endereco]
-    );
-
-    const pessoa = result.rows[0];
-
-    // Cria cliente vinculado
-    await query(
-      `INSERT INTO cliente (idpessoa, datacadastro)
-       VALUES ($1, NOW())`,
-      [pessoa.idpessoa]
-    );
-
-    // 🔹 Grava cookie igual ao login
-    res.cookie("usuarioLogado", JSON.stringify(pessoa), {
-      httpOnly: false, // precisa ser false porque o front lê o cookie
-      maxAge: 3600 * 1000, // 1h
-      path: "/"
-    });
-
-    // Retorna também no body
-    res.status(201).json({
-      sucesso: true,
-      usuario: pessoa
-    });
-
-  } catch (err) {
-    console.error("Erro no cadastro:", err);
-    res.status(500).json({ erro: "Erro interno ao cadastrar" });
-  }
-};
-
-// ================== LOGIN ==================
+// ================== LOGIN FUNCIONÁRIO ==================
 exports.login = async (req, res) => {
   try {
+   
     const { email, senha } = req.body;
+    
+ console.log("Tentando login com:", email, senha);
 
+    // Validação simples
     if (!email || !senha) {
-      return res.status(400).json({ erro: "Email e senha são obrigatórios" });
+      return res.status(400).json({ erro: "Email e senha são obrigatórios." });
     }
 
-    // 🔹 Verifica se a pessoa existe E é funcionária
+    // Verifica se a pessoa existe e é um funcionário
     const result = await query(
       `SELECT p.idpessoa, p.nomepessoa, p.emailpessoa
        FROM pessoa p
@@ -75,31 +23,38 @@ exports.login = async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res
-        .status(401)
-        .json({ sucesso: false, erro: "Usuário não encontrado ou não é funcionário." });
+      return res.status(401).json({
+        sucesso: false,
+        erro: "Usuário não encontrado ou não é funcionário."
+      });
     }
 
     const usuario = result.rows[0];
 
-    // 🔹 Grava cookie no navegador
+    // Cria cookie com os dados do usuário logado
     res.cookie("usuarioLogado", JSON.stringify(usuario), {
-      httpOnly: false, // precisa ser false porque o front lê o cookie
+      httpOnly: false, // o front pode ler o cookie
       maxAge: 24 * 60 * 60 * 1000, // 1 dia
       path: "/"
     });
 
-    // 🔹 Retorna também no corpo da resposta
-    res.json({ sucesso: true, usuario });
+    // Retorna também no corpo da resposta
+    res.json({
+      sucesso: true,
+      usuario
+    });
 
   } catch (err) {
     console.error("Erro no login:", err);
-    res.status(500).json({ erro: "Erro interno ao logar" });
+    res.status(500).json({ erro: "Erro interno ao tentar login." });
   }
 };
 
 // ================== LOGOUT ==================
 exports.logout = (req, res) => {
   res.clearCookie("usuarioLogado");
-  res.json({ sucesso: true, mensagem: "Logout realizado" });
+  res.json({
+    sucesso: true,
+    mensagem: "Logout realizado com sucesso."
+  });
 };

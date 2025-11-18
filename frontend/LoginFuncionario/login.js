@@ -1,3 +1,4 @@
+
 const loginForm = document.getElementById("loginForm");
 const btnCadastrar = document.getElementById("btnCadastrar");
 const senhaInput = document.getElementById("senha");

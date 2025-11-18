@@ -23,12 +23,18 @@ exports.listarPedidos = async (req, res) => {
 exports.obterPedido = async (req, res) => {
   try {
     const { id } = req.params;
+    
+const pedidoResult = await query(
+  `SELECT p.idpedido, p.datapedido, p.idpessoa, 
+          pes.cpfpessoa AS cpf, 
+          pes.nomepessoa AS nome, 
+          p.valortotal
+   FROM pedido p
+   JOIN pessoa pes ON pes.idpessoa = p.idpessoa
+   WHERE p.idpedido = $1`,
+  [id]
+);
 
-    const pedidoResult = await query(
-      `SELECT idpedido, datapedido, idpessoa, valortotal 
-       FROM pedido WHERE idpedido = $1`,
-      [id]
-    );
 
     if (pedidoResult.rows.length === 0)
       return res.status(404).json({ error: 'Pedido não encontrado.' });

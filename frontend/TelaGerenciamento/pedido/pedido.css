@@ -23,6 +23,7 @@ h1 {
   margin-bottom: 2rem;
 }
 
+
 h2 {
   color: #0a3126;
   margin-bottom: 1.5rem;
@@ -39,6 +40,14 @@ section {
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+
+legend {
+  font-size: 1.3rem;        /* aumenta o tamanho da fonte */
+  font-weight: 700;         /* deixa o texto um pouco mais forte */
+  color: #0a3126;           /* mantém o tom escuro BePlant */
+  padding: 0 0.5rem;        /* dá um leve respiro nas laterais */
+}
+
 
 /* Formulário */
 form {
@@ -140,9 +149,7 @@ select:focus {
   display: none;
 }
 
-.results-list.show {
-  display: block;
-}
+.results-list.show { display: block; }
 
 .results-list li {
   padding: 0.6rem 1rem;
@@ -151,9 +158,7 @@ select:focus {
   cursor: pointer;
 }
 
-.results-list li:hover {
-  background-color: #e4fdf7;
-}
+.results-list li:hover { background-color: #e4fdf7; }
 
 /* Botões */
 button {
@@ -177,7 +182,9 @@ button {
   font-size: 0.9rem;
 }
 
-/* Tabela de Itens */
+/* ==============================
+   Tabela de Itens
+   ============================== */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -188,7 +195,7 @@ table {
 }
 
 th, td {
-  padding: 1rem;
+  padding: 0.8rem;
   border-bottom: 1px solid #ddd;
   text-align: left;
 }
@@ -200,8 +207,27 @@ th {
   font-size: 0.9rem;
 }
 
-tbody tr:hover {
-  background-color: #f2f2f2;
+tbody tr:hover { background-color: #f2f2f2; }
+
+/* Campos da tabela */
+#itensTable input[type="number"] {
+  width: 90px;
+  padding: 0.6rem 1rem;
+  font-size: 0.9rem;
+}
+
+#itensTable input.nomeproduto {
+  width: 160px;
+}
+
+#itensTable td,
+#itensTable input[type="number"] {
+  text-align: center;
+}
+
+#itensTable .btn-small {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
 }
 
 /* Campo produto (input + botão dentro da tabela) */
@@ -246,7 +272,9 @@ footer {
   border-radius: 10px;
 }
 
-/* Responsividade */
+/* ==============================
+   Responsividade
+   ============================== */
 @media (max-width: 768px) {
   body { padding: 1rem; }
 

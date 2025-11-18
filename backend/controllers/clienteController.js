@@ -4,16 +4,23 @@ const { query } = require('../database');
 exports.listarCliente = async (req, res) => {
   try {
     const result = await query(`
-      SELECT idpessoa, datacadastro
-      FROM cliente
-      ORDER BY idpessoa
+      SELECT
+        c.idpessoa,
+        p.cpfpessoa AS pessoa_cpf_pessoa,
+        p.nomepessoa AS nome_pessoa,
+        c.datacadastro
+      FROM cliente c
+      INNER JOIN pessoa p ON p.idpessoa = c.idpessoa
+      ORDER BY p.nomepessoa
     `);
+
     res.json(result.rows);
   } catch (error) {
     console.error('Erro ao listar clientes:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 };
+
 
 // Criar novo cliente
 exports.criarCliente = async (req, res) => {
