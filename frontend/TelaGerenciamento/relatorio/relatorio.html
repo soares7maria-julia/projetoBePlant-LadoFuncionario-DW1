@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatórios - BePlant</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="relatorio.css">
+</head>
+
+<body>
+
+    <h1>Relatórios Mensais</h1>
+
+    <!-- GRÁFICO: CLIENTES POR MÊS -->
+    <div class="grafico-container">
+        <h2>Clientes Cadastrados por Mês</h2>
+        <canvas id="graficoClientes"></canvas>
+    </div>
+
+    <!-- GRÁFICO: VENDAS POR MÊS -->
+    <div class="grafico-container">
+        <h2>Vendas por Mês</h2>
+        <canvas id="graficoVendas"></canvas>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="relatorio.js"></script>
+
+</body>
+</html>

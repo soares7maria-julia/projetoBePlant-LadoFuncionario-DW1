@@ -7,12 +7,12 @@ const atributosParaPesquisar = ["cpf", "nome"];
 let dadosParaFiltrar = [];
 
 // Busca os clientes no backend
-fetch("http://localhost:3001/cliente")
+fetch("http://localhost:3001/pessoa")
   .then((response) => response.json())
   .then((data) => {
     dadosParaFiltrar = data.map((item) => ({
-      cpf: item.pessoa_cpf_pessoa,
-      nome: item.nome_pessoa,
+      cpf: item.cpfpessoa,
+      nome: item.nomepessoa,
     }));
     console.log("Clientes carregados:", dadosParaFiltrar);
   })
@@ -21,9 +21,9 @@ fetch("http://localhost:3001/cliente")
     dadosParaFiltrar = [];
   });
 
-/**
- * Cria o mecanismo de busca dinâmica
- */
+
+// Cria o mecanismo de busca dinâmica
+
 function createBuscaDinamica({
   searchTypeId,
   searchInputId,
@@ -114,9 +114,6 @@ function createBuscaDinamica({
   };
 }
 
-/* ================================
-   Inicializa APENAS UMA VEZ
-   ================================ */
 
 let bdBusca = null;
 
