@@ -1,138 +1,124 @@
-// ===============================
-// CONTROLLER PEDIDO 
-// ===============================
+const { query } = require("../database");
 
-const { query } = require('../database');
-
-
-// ===============================
-// LISTAR TODOS OS PEDIDOS
-// ===============================
-exports.listarPedidos = async (req, res) => {
-  try {
-    const pedidos = await query(`
-      SELECT 
-        idpedido,
-        datapedido,
-        idpessoa,
-        valortotal
-      FROM pedido
-      ORDER BY idpedido ASC
-    `);
-
-    res.status(200).json(pedidos.rows);
-
-  } catch (error) {
-    console.error("Erro ao listar pedidos:", error);
-    res.status(500).json({ error: "Erro ao listar pedidos." });
-  }
-};
-
-
-// ===============================
-// OBTER UM PEDIDO POR ID
-// ===============================
-exports.obterPedido = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const pedidoResult = await query(`
-      SELECT 
-        idpedido,
-        datapedido,
-        idpessoa,
-        valortotal
-      FROM pedido
-      WHERE idpedido = $1
-    `, [id]);
-
-    if (pedidoResult.rows.length === 0)
-      return res.status(404).json({ error: "Pedido não encontrado." });
-
-    res.status(200).json(pedidoResult.rows[0]);
-
-  } catch (error) {
-    console.error("Erro ao obter pedido:", error);
-    res.status(500).json({ error: "Erro ao obter pedido." });
-  }
-};
-
-
-// ===============================
-// CRIAR NOVO PEDIDO
-// ===============================
+// ======================================
+// CREATE — Criar pedido
+// ======================================
 exports.criarPedido = async (req, res) => {
   try {
     const { datapedido, idpessoa, valortotal } = req.body;
 
-    if (!datapedido || !idpessoa) {
-      return res.status(400).json({ error: "Campos obrigatórios ausentes." });
-    }
+    const result = await query(
+      `INSERT INTO pedido (datapedido, idpessoa, valortotal)
+       VALUES ($1, $2, $3)
+       RETURNING idpedido`,
+      [datapedido, idpessoa, valortotal]
+    );
 
-    const insertResult = await query(`
-      INSERT INTO pedido (datapedido, idpessoa, valortotal)
-      VALUES ($1, $2, $3)
-      RETURNING *
-    `, [datapedido, idpessoa, valortotal || 0]);
-
-    res.status(201).json(insertResult.rows[0]);
+    res.json({ idpedido: result.rows[0].idpedido });
 
   } catch (error) {
     console.error("Erro ao criar pedido:", error);
-    res.status(500).json({ error: "Erro ao criar pedido." });
+    res.status(500).json({ erro: "Erro ao criar pedido." });
   }
 };
 
+// ======================================
+// READ — Listar todos pedidos
+// ======================================
+exports.listarPedidos = async (req, res) => {
+  try {
+    const result = await query(
+      `SELECT * FROM pedido ORDER BY idpedido DESC`
+    );
+    res.json(result.rows);
+  } catch (error) {
+    console.error("Erro ao listar pedidos:", error);
+    res.status(500).json({ erro: "Erro ao listar pedidos." });
+  }
+};
 
-// ===============================
-// ATUALIZAR UM PEDIDO
-// ===============================
+// ======================================
+// READ — Buscar por ID
+// ======================================
+exports.buscarPedidoPorId = async (req, res) => {
+  try {
+    const { idpedido } = req.params;
+
+    const result = await query(
+      `SELECT * FROM pedido WHERE idpedido = $1`,
+      [idpedido]
+    );
+
+    if (result.rows.length === 0) {
+  return res.status(200).json({ exists: false });
+}
+
+    res.json(result.rows[0]);
+
+  } catch (error) {
+    console.error("Erro ao buscar pedido:", error);
+    res.status(500).json({ erro: "Erro ao buscar pedido." });
+  }
+};
+
+// ======================================
+// READ — Pedidos de uma pessoa
+// ======================================
+exports.pedidosPorPessoa = async (req, res) => {
+  try {
+    const { idpessoa } = req.params;
+
+    const result = await query(
+      `SELECT * FROM pedido WHERE idpessoa = $1 ORDER BY idpedido DESC`,
+      [idpessoa]
+    );
+
+    res.json(result.rows);
+
+  } catch (error) {
+    console.error("Erro ao listar pedidos por pessoa:", error);
+    res.status(500).json({ erro: "Erro ao listar pedidos por pessoa." });
+  }
+};
+
+// ======================================
+// UPDATE — Atualizar pedido
+// ======================================
 exports.atualizarPedido = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { idpedido } = req.params;
     const { datapedido, idpessoa, valortotal } = req.body;
 
-    const updateResult = await query(`
-      UPDATE pedido
-      SET datapedido = $1,
-          idpessoa = $2,
-          valortotal = $3
-      WHERE idpedido = $4
-      RETURNING *
-    `, [datapedido, idpessoa, valortotal || 0, id]);
+    await query(
+      `UPDATE pedido 
+       SET datapedido = $1, idpessoa = $2, valortotal = $3
+       WHERE idpedido = $4`,
+      [datapedido, idpessoa, valortotal, idpedido]
+    );
 
-    if (updateResult.rows.length === 0)
-      return res.status(404).json({ error: "Pedido não encontrado." });
-
-    res.status(200).json(updateResult.rows[0]);
+    res.json({ sucesso: true, mensagem: "Pedido atualizado com sucesso" });
 
   } catch (error) {
     console.error("Erro ao atualizar pedido:", error);
-    res.status(500).json({ error: "Erro ao atualizar pedido." });
+    res.status(500).json({ erro: "Erro ao atualizar pedido." });
   }
 };
 
-
-// ===============================
-// DELETAR UM PEDIDO
-// ===============================
+// DELETE — Excluir pedido
 exports.deletarPedido = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { idpedido } = req.params;
 
-    const deleteResult = await query(`
-      DELETE FROM pedido
-      WHERE idpedido = $1
-      RETURNING *
-    `, [id]);
+    // 1️⃣ Deletar itens do pedido primeiro
+    await query(`DELETE FROM pedido_item WHERE idpedido = $1`, [idpedido]);
 
-    if (deleteResult.rows.length === 0)
-      return res.status(404).json({ error: "Pedido não encontrado." });
+    // 2️⃣ Agora sim deletar o pedido
+    await query(`DELETE FROM pedido WHERE idpedido = $1`, [idpedido]);
 
-    res.status(200).json({ message: "Pedido excluído com sucesso." });
+    res.json({ sucesso: true, mensagem: "Pedido e itens deletados com sucesso" });
 
   } catch (error) {
     console.error("Erro ao deletar pedido:", error);
-    res.status(500).json({ error: "Erro ao deletar pedido." });
+    res.status(500).json({ erro: "Erro ao deletar pedido." });
   }
 };

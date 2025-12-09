@@ -2,7 +2,7 @@
 
 /* Contêiner principal da busca */
 .containerBuscaDinamica {
-    background: #fff;
+    background: #43bbb5;
     padding: 10px 0;
     border-radius: 8px;
     width: 100%;
@@ -73,12 +73,33 @@
 .results-list li {
     padding: 10px 12px;
     cursor: pointer;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #e8fcfa;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .results-list li:hover {
-    background-color: #f7f7f7;
+    background-color: #c2fff2;
 }
+
+/* 🔥 Forçar lista a aparecer acima de tudo */
+.search-bar-container {
+    position: relative;
+    overflow: visible !important; /* isso garante que a lista pode sair pra fora */
+    z-index: 10;
+}
+
+.results-list {
+    position: absolute;
+    z-index: 9999 !important; /* força a lista a ficar na frente */
+}
+
+/* 🔥 Garantir que nada esconda a lista */
+.form-section,
+.form-group,
+.search-container,
+.search-input-group {
+    overflow: visible !important;
+}
+

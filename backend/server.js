@@ -125,8 +125,8 @@ app.use('/pedido', pedidoRoutes);
 const pedidoItemRoutes = require('./routes/pedido_itemRoutes');
 app.use('/pedido_item', pedidoItemRoutes);
 
-const relatorioRoutes = require('./routes/relatorioRoutes');
-app.use('/relatorio', relatorioRoutes);
+//const relatorioRoutes = require('./routes/relatorioRoutes');
+//app.use('/relatorio', relatorioRoutes);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,12 +1,21 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const pedidoController = require('../controllers/pedidoController');
+const controller = require("../controllers/pedidoController");
 
-// Rotas de CRUD para pedidos
-router.get('/', pedidoController.listarPedidos);
-router.get('/:id', pedidoController.obterPedido);
-router.post('/', pedidoController.criarPedido);
-router.put('/:id', pedidoController.atualizarPedido);
-router.delete('/:id', pedidoController.deletarPedido);
+// === CREATE ===
+router.post("/", controller.criarPedido);
+
+// === READ ===
+router.get("/", controller.listarPedidos);                    // lista todos
+
+router.get("/pessoa/:idpessoa", controller.pedidosPorPessoa); // lista por pessoa
+
+router.get("/:idpedido", controller.buscarPedidoPorId);       // busca por ID (sempre por último)
+
+// === UPDATE ===
+router.put("/:idpedido", controller.atualizarPedido);
+
+// === DELETE ===
+router.delete("/:idpedido", controller.deletarPedido);
 
 module.exports = router;

@@ -1,17 +1,18 @@
-const express = require('express');
+const express = require('express'); 
 const router = express.Router();
 const itemCtrl = require('../controllers/pedido_itemController');
 
-// LISTAR ITENS DE UM PEDIDO
+/// PRIMEIRO a rota específica
+router.get('/:idpedido/:iditem', itemCtrl.buscarItemPorId);
+
+router.get('/:idpedido/:iditem', itemCtrl.buscarItemPorId);
+
+// DEPOIS a rota que lista todos
 router.get('/:idpedido', itemCtrl.listarItensPorPedido);
 
-// CRIAR ITEM
+// CRUD
 router.post('/', itemCtrl.criarItem);
-
-// ATUALIZAR ITEM
 router.put('/:idpedido/:iditem', itemCtrl.atualizarItem);
-
-// DELETAR ITEM
 router.delete('/:idpedido/:iditem', itemCtrl.deletarItem);
 
 module.exports = router;

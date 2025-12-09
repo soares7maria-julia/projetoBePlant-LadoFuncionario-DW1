@@ -1,8 +1,41 @@
 // ===============================
-// CONTROLLER pedido_item – BePlant
+// CONTROLLER pedido_item – BePlant (PostgreSQL)
 // ===============================
 
 const { query } = require('../database');
+
+// -----------------------------------------
+// BUSCAR UM ITEM ESPECÍFICO (NOVA ROTA)
+// -----------------------------------------
+exports.buscarItemPorId = async (req, res) => {
+  const { idpedido, iditem } = req.params;
+
+  try {
+    const sql = `
+      SELECT 
+        pitem.idpedido,
+        pitem.iditem,
+        i.nomeitem,
+        pitem.quantidade,
+        pitem.valorunitario
+      FROM pedido_item pitem
+      JOIN item i ON i.iditem = pitem.iditem
+      WHERE pitem.idpedido = $1 AND pitem.iditem = $2
+    `;
+
+    const result = await query(sql, [idpedido, iditem]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Item não encontrado" });
+    }
+
+    res.json(result.rows[0]);
+
+  } catch (err) {
+    console.error("Erro ao buscar item:", err);
+    res.status(500).json({ error: "Erro ao buscar item" });
+  }
+};
 
 // -----------------------------------------
 // LISTAR ITENS DE UM PEDIDO
@@ -96,7 +129,7 @@ exports.atualizarItem = async (req, res) => {
 };
 
 // -----------------------------------------
-// DELETAR ITEM ESPECÍFICO DE UM PEDIDO
+// DELETAR ITEM ESPECÍFICO
 // -----------------------------------------
 exports.deletarItem = async (req, res) => {
   try {
