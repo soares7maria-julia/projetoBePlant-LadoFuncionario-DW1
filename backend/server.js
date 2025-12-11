@@ -3,75 +3,50 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 
+
+process.on('uncaughtException', err => {
+  console.error('💥 UNCAUGHT:', err);
+});
+
+process.on('unhandledRejection', err => {
+  console.error('💥 PROMISE:', err);
+});
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// CORS configurado corretamente (versão compatível com qualquer navegador)
-const allowedOrigins = [
-  'http://127.0.0.1:5503',
-  'http://localhost:5503',
-  'http://127.0.0.1:3001',
-  'http://localhost:3001'
-];
-
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  } else {
-    // fallback seguro para não quebrar requisições locais
-    res.header('Access-Control-Allow-Origin', '*');
-  }
-
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true');
-
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
-
-  next();
-});
-
-
-
-// 🔧 Habilita CORS ANTES de tudo
-/*
-app.use(cors({
-  origin: ['http://127.0.0.1:5502', 'http://localhost:5502'],
+const corsOptions = {
+  origin: [
+    'http://127.0.0.1:5500',
+    'http://localhost:5500',
+    'http://127.0.0.1:5501',
+    'http://localhost:5501',
+    'http://127.0.0.1:5502',
+    'http://localhost:5502',
+    'http://127.0.0.1:5503',
+    'http://localhost:5503',
+    'http://127.0.0.1:5504',
+    'http://localhost:5504',
+    'http://localhost:3001',
+    'http://127.0.0.1:3001'
+  ],
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
-*/
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
 
-  const whitelist = [
-  'http://127.0.0.1:5500',
-  'http://localhost:5500',
-  'http://127.0.0.1:5501',
-  'http://localhost:5501',
-  'http://127.0.0.1:5502',
-  'http://localhost:5502',
-  'http://127.0.0.1:5503', // ✅ ADICIONE ESTA LINHA
-  'http://localhost:5503', // ✅ E ESTA
-  'http://127.0.0.1:5504', // (opcional)
-  'http://localhost:5504', // (opcional)
-  'http://localhost:3001',
-  'http://127.0.0.1:3001'
-];
-
-// Configurações de pasta
-app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(cookieParser());
+app.use(cors(corsOptions));
 
+
+
+// imagens públicas
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 // Importar a configuração do banco PostgreSQL
-////// Tirar de comentario depois 
 const db = require('./database'); // Ajuste o caminho conforme necessário 
-//////
+
 
 // Configurações do servidor - quando em produção, você deve substituir o IP e a porta pelo do seu servidor remoto
 //const HOST = '192.168.1.100'; // Substitua pelo IP do seu servidor remoto
@@ -83,8 +58,6 @@ const caminhoFrontend = path.join(__dirname, '../frontend');
 console.log('Caminho frontend:', caminhoFrontend);
 
 app.use(express.static(caminhoFrontend));
-// Servir a pasta "images" para acesso público
-app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use(cookieParser());
 
@@ -125,8 +98,11 @@ app.use('/pedido', pedidoRoutes);
 const pedidoItemRoutes = require('./routes/pedido_itemRoutes');
 app.use('/pedido_item', pedidoItemRoutes);
 
-//const relatorioRoutes = require('./routes/relatorioRoutes');
-//app.use('/relatorio', relatorioRoutes);
+const relatorioRoutes = require('./routes/relatorioRoutes');
+app.use('/relatorio', relatorioRoutes);
+
+const pedido_pagoRoutes = require("./routes/pedido_pagoRoutes");
+app.use("/pedido_pago", pedido_pagoRoutes);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

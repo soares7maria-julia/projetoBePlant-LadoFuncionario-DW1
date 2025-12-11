@@ -1,29 +1,46 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Relatório Cliente - BePlant</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BePlant — Clientes cadastrados por mês</title>
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="relatorioCliente.css">
+  <link rel="stylesheet" href="relatorioCliente.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
+  <div id="controls">
+    <button id="btn-back">⬅ Voltar</button>
+    <button id="btn-print">🖨️ Imprimir</button>
+  </div>
 
-    <h1>Relatório Cliente</h1>
+  <header class="page-header">
+    <h1>🌿 BePlant — Clientes cadastrados por mês</h1>
+    <p class="subtitle"> Número de Clientes cadastrados mensalmente </p>
+  </header>
 
-    <!-- GRÁFICO: CLIENTES POR MÊS -->
-    <div class="grafico-container">
-        <h2>Clientes Cadastrados por Mês</h2>
-        <canvas id="graficoClientes"></canvas>
-    </div>
+  <main>
+    <section class="table-section">
+     <table class="tabela" id="tabela-horizontal">
+  <thead>
+    <tr id="linha-meses"></tr>
+  </thead>
+  <tbody>
+    <tr id="linha-valores"></tr>
+  </tbody>
+</table>
 
+    </section>
 
-    <!-- JavaScript -->
-    <script src="relatorioCliente.js"></script>
+    <section id="grafico-container">
+      <canvas id="graficoClientes" aria-label="Gráfico de clientes cadastrados por mês"></canvas>
+    </section>
+  </main>
 
+  <footer class="page-footer">
+    <small>Relatório BePlant — Página 1</small>
+  </footer>
+
+  <script src="./relatorioCliente.js"></script>
 </body>
 </html>

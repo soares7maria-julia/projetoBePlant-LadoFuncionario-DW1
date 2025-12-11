@@ -96,7 +96,7 @@ exports.atualizarPedido = async (req, res) => {
       [datapedido, idpessoa, valortotal, idpedido]
     );
 
-    res.json({ sucesso: true, mensagem: "Pedido atualizado com sucesso" });
+res.json({ sucesso: true, mensagem: "Pedido atualizado com sucesso", idpedido });
 
   } catch (error) {
     console.error("Erro ao atualizar pedido:", error);

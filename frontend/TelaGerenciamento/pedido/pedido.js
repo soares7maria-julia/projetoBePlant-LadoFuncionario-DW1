@@ -120,9 +120,78 @@ async function preencherCliente(idpessoa) {
   }
 }
 
+// ===============================
+// PAGAMENTO - CONSULTAR STATUS
+// ===============================
+async function verificarPagamento(idpedido) {
+  try {
+ const resp = await fetch(`${API_BASE_URL}/pedido_pago/${idpedido}`, {
+  method: "GET",
+  headers: { "Accept": "application/json" }
+});
+
+    if (resp.status === 404) {
+      console.log("Pedido ainda não foi pago");
+      return false;
+    }
+
+    if (!resp.ok) return false;
+
+    const data = await resp.json();
+    return data.pago === true;
+  } catch (e) {
+    console.error("Erro ao verificar pagamento:", e);
+    return false;
+  }
+}
+
+
+
+// ===============================
+// PAGAMENTO - SALVAR STATUS
+// ===============================
+async function salvarStatusPagamento(idpedido) {
+  const chk = document.getElementById("chkPago");
+  const pago = chk.checked;
+
+  if (!idpedido) {
+    console.warn("ERRO: idpedido indefinido ao salvar pagamento.");
+    return;
+  }
+
+  if (pago) {
+    // Criar pagamento
+    await fetch(`${API_BASE_URL}/pedido_pago`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        idpedido,
+        idpessoa: document.getElementById("idpessoa_cliente").value,
+        datapagamento: new Date().toISOString().slice(0, 10),
+        valortotal: atualizarTotal(),
+        formapagamento: "PIX"
+      })
+    });
+  } else {
+    // Remover pagamento
+    await fetch(`${API_BASE_URL}/pedido_pago/${idpedido}`, {
+      method: "DELETE"
+    });
+  }
+}
 async function preencherFormulario(pedido) {
   dataPedido.value = pedido.datapedido?.substring(0, 10) || "";
   await preencherCliente(pedido.idpessoa);
+
+  const chk = document.getElementById("chkPago");
+  const box = document.getElementById("pagoGroup");
+
+  const pago = await verificarPagamento(pedido.idpedido);
+
+  chk.checked = pago;
+
+  if (pago) box.classList.add("pago-ativo");
+  else box.classList.remove("pago-ativo");
 }
 
 // ===============================
@@ -157,11 +226,31 @@ async function salvarPedido() {
         body: JSON.stringify(pedido)
       });
     }
+if (!res.ok) throw new Error("Erro ao salvar pedido.");
+let idSalvo;
 
-    if (!res.ok) throw new Error("Erro ao salvar pedido.");
+// Inclusão → pega ID retornado
+if (operacao === "incluir") {
+  const data = await res.json();
+  idSalvo = data.idpedido;
+}
 
-    showMessage("Pedido salvo com sucesso!", "success");
-    limparFormulario();
+// Alteração → usa o ID atual
+else if (operacao === "alterar") {
+  idSalvo = pedidoAtual.idpedido;
+}
+
+// Segurança extra: se ainda deu undefined
+if (!idSalvo) {
+  idSalvo = searchId.value;
+}
+
+// Salvar status de pagamento
+await salvarStatusPagamento(idSalvo);
+
+
+showMessage("Pedido salvo com sucesso!", "success");
+limparFormulario();
 
   } catch (err) {
     showMessage(err.message, "error");

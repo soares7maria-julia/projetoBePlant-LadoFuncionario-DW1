@@ -1,137 +1,138 @@
 const { query } = require('../database');
+const path = require('path');
+const fs = require('fs').promises;
 
+function safeLog(label, value) {
+  console.log(`🧪 ${label}:`, value);
+}
 
-// Listar todos os produtos (JOIN categoria)
+/* ================= LISTAR ================= */
 exports.listarProdutos = async (req, res) => {
-  const sql = `
-  SELECT 
-    i.iditem,
-    i.nomeitem,
-    i.estoqueitem,
-    i.valorunitario,
-    i.imagemitem,
-    c.idcategoria,
-    c.nomecategoria
-  FROM item i
-  JOIN categoria c ON i.idcategoria = c.idcategoria
-`;
   try {
-    const result = await query(sql);
+    const result = await query(`
+      SELECT i.*, c.nomecategoria
+      FROM item i
+      JOIN categoria c ON c.idcategoria = i.idcategoria
+    `);
     res.json(result.rows);
   } catch (err) {
-    console.error('Erro ao buscar produtos:', err);
-    res.status(500).json({ error: 'Erro ao buscar produtos' });
+    console.error(err);
+    res.status(500).json({ error: 'Erro listar produtos' });
   }
 };
 
-// Obter produto por ID
+/* ================= OBTER ================= */
 exports.obterProduto = async (req, res) => {
-  const { id } = req.params;
-  const sql = `
-  SELECT 
-    i.iditem,
-    i.nomeitem,
-    i.estoqueitem,
-    i.valorunitario,
-    i.imagemitem,
-    c.idcategoria,
-    c.nomecategoria
-  FROM item i
-  JOIN categoria c ON i.idcategoria = c.idcategoria
-  WHERE i.iditem = $1
-`;
   try {
-    const result = await query(sql, [id]);
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Produto não encontrado' });
-    }
+    const result = await query(
+      'SELECT * FROM item WHERE iditem=$1',
+      [req.params.id]
+    );
+    if (!result.rows.length) return res.sendStatus(404);
     res.json(result.rows[0]);
   } catch (err) {
-    console.error('Erro ao buscar produto:', err);
-    res.status(500).json({ error: 'Erro ao buscar produto' });
+    console.error(err);
+    res.status(500).json({ error: 'Erro buscar produto' });
   }
 };
 
-// Criar novo produto
+/* ================= CRIAR ================= */
 exports.criarProduto = async (req, res) => {
   try {
+    safeLog('BODY', req.body);
+    safeLog('FILE', req.file);
+
     const { nomeitem, estoqueitem, valorunitario, idcategoria } = req.body;
-    const imagemitem = req.file ? req.file.filename : req.body.imagemitem;
 
-    const sql = `
-      INSERT INTO item (nomeitem, estoqueitem, valorunitario, imagemitem, idcategoria)
-      VALUES ($1, $2, $3, $4, $5)
+    const result = await query(`
+      INSERT INTO item (nomeitem, estoqueitem, valorunitario, idcategoria)
+      VALUES ($1,$2,$3,$4)
       RETURNING iditem
-    `;
+    `, [nomeitem, estoqueitem, valorunitario, idcategoria]);
 
-    const result = await query(sql, [nomeitem, estoqueitem, valorunitario, imagemitem, idcategoria]);
+    const iditem = result.rows[0].iditem;
+    let imagemitem = null;
 
-    res.status(201).json({
-      iditem: result.rows[0].iditem,
-      nomeitem,
-      estoqueitem,
-      valorunitario,
-      imagemitem,
-      idcategoria
-    });
+    if (req.file && req.file.path) {
+      const ext = path.extname(req.file.originalname) || '.png';
+      imagemitem = `${iditem}${ext}`;
+
+      const destino = path.join(__dirname, '..', 'images', imagemitem);
+
+      await fs.mkdir(path.dirname(destino), { recursive: true });
+
+      try {
+        await fs.rename(req.file.path, destino);
+      } catch (err) {
+        console.error('⚠️ Erro ao mover imagem:', err);
+      }
+
+      await query(
+        'UPDATE item SET imagemitem=$1 WHERE iditem=$2',
+        [imagemitem, iditem]
+      );
+    }
+
+    res.status(201).json({ iditem, imagemitem });
+
   } catch (err) {
-    console.error('Erro ao criar produto:', err);
-    res.status(500).json({ error: 'Erro ao criar produto' });
+    console.error('🔥 CREATE:', err);
+    res.status(500).json({ error: 'Erro criar produto' });
   }
 };
 
-// Atualizar produto
+/* ================= ATUALIZAR ================= */
 exports.atualizarProduto = async (req, res) => {
   try {
+    safeLog('FILE', req.file);
+
     const { id } = req.params;
-    const { nomeitem, estoqueitem, valorunitario, idcategoria, imagemNome } = req.body;
-   const imagemitem = req.file ? req.file.filename : req.body.imagemnome;
 
-    const sql = `
-      UPDATE item
-      SET nomeitem=$1, estoqueitem=$2, valorunitario=$3, imagemitem=$4, idcategoria=$5
-      WHERE iditem=$6
-    `;
-
-    const result = await query(sql, [
-      nomeitem,
-      estoqueitem,
-      valorunitario,
-      imagemitem,
-      idcategoria,
+    await query(`
+      UPDATE item SET nomeitem=$1, estoqueitem=$2, valorunitario=$3, idcategoria=$4
+      WHERE iditem=$5
+    `, [
+      req.body.nomeitem,
+      req.body.estoqueitem,
+      req.body.valorunitario,
+      req.body.idcategoria,
       id
     ]);
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: 'Produto não encontrado' });
+    if (req.file && req.file.path) {
+      const ext = path.extname(req.file.originalname) || '.png';
+      const imagemitem = `${id}${ext}`;
+      const destino = path.join(__dirname, '..', 'images', imagemitem);
+
+      await fs.mkdir(path.dirname(destino), { recursive: true });
+
+      try {
+        await fs.rename(req.file.path, destino);
+      } catch (err) {
+        console.error('⚠️ rename falhou:', err);
+      }
+
+      await query(
+        'UPDATE item SET imagemitem=$1 WHERE iditem=$2',
+        [imagemitem, id]
+      );
     }
 
-    res.json({
-      iditem: id,
-      nomeitem,
-      estoqueitem,
-      valorunitario,
-      imagemitem,
-      idcategoria
-    });
+    res.json({ success: true });
+
   } catch (err) {
-    console.error('Erro ao atualizar produto:', err);
-    res.status(500).json({ error: 'Erro ao atualizar produto' });
+    console.error('🔥 UPDATE:', err);
+    res.status(500).json({ error: 'Erro atualizar produto' });
   }
 };
 
-// Deletar produto
+/* ================= DELETE ================= */
 exports.deletarProduto = async (req, res) => {
-  const { id } = req.params;
-  const sql = 'DELETE FROM item WHERE iditem=$1';
   try {
-    const result = await query(sql, [id]);
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: 'Produto não encontrado' });
-    }
-    res.json({ message: 'Produto deletado com sucesso' });
+    await query('DELETE FROM item WHERE iditem=$1', [req.params.id]);
+    res.json({ success: true });
   } catch (err) {
-    console.error('Erro ao deletar produto:', err);
-    res.status(500).json({ error: 'Erro ao deletar produto' });
+    console.error(err);
+    res.status(500).json({ error: 'Erro deletar produto' });
   }
 };

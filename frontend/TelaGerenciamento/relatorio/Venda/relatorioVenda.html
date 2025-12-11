@@ -1,28 +1,55 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Relatório Venda - BePlant</title>
-
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="relatorioVenda.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório — Vendas por mês</title>
+  <link rel="stylesheet" href="relatorioVenda.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
 
-    <h1>Relatório Venda</h1>
+  <!-- Botões superiores -->
+  <div id="controls">
+    <button id="btn-back">Voltar</button>
+    <button id="btn-print">Imprimir</button>
+  </div>
 
-    <!-- GRÁFICO: VENDAS POR MÊS -->
-    <div class="grafico-container">
-        <h2>Vendas por Mês</h2>
-        <canvas id="graficoVendas"></canvas>
-    </div>
+  <!-- Cabeçalho -->
+  <div class="page-header">
+    <h1>Relatório de Vendas — BePlant</h1>
+    <p class="subtitle">Resumo mensal e mês com mais vendas</p>
+  </div>
 
-    <!-- JavaScript -->
-    <script src="relatorioVenda.js"></script>
+  <main>
 
+    <!-- Tabela: mês com mais vendas -->
+    <section class="table-section">
+      <table>
+        <thead>
+          <tr>
+            <th>Mês com mais vendas</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-vendas">
+          <tr><td colspan="2">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Gráfico -->
+    <section id="grafico-container">
+      <canvas id="graficoVendas"></canvas>
+    </section>
+
+  </main>
+
+  <!-- Rodapé -->
+  <div class="page-footer">
+    BePlant — Relatórios
+  </div>
+
+  <script src="relatorioVenda.js"></script>
 </body>
 </html>

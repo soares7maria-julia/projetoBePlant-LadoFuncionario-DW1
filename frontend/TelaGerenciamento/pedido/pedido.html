@@ -65,8 +65,19 @@
 
               <ul id="resultsList" class="results-list"></ul>
             </div>
+            
+        <div id="pagoGroup" class="form-group pago-group">
+  <input type="checkbox" id="chkPago">
+  <label for="chkPago">Pedido Pago</label>
+
+  <input type="date" id="dataPagamento" style="display:none;">
+  <input type="number" id="valorPago" style="display:none;" readonly>
+  <select id="formaPagamento" style="display:none;">
+      <option value="PIX">PIX</option>
+  </select>
+</div>
+
           </div>
-                 
 
       </form>
     </section>

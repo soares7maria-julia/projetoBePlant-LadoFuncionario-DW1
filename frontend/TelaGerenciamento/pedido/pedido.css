@@ -23,7 +23,6 @@ h1 {
   margin-bottom: 2rem;
 }
 
-
 h2 {
   color: #0a3126;
   margin-bottom: 1.5rem;
@@ -42,12 +41,11 @@ section {
 }
 
 legend {
-  font-size: 1.3rem;        /* aumenta o tamanho da fonte */
-  font-weight: 700;         /* deixa o texto um pouco mais forte */
-  color: #0a3126;           /* mantém o tom escuro BePlant */
-  padding: 0 0.5rem;        /* dá um leve respiro nas laterais */
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0a3126;
+  padding: 0 0.5rem;
 }
-
 
 /* Formulário */
 form {
@@ -105,7 +103,7 @@ select:focus {
   flex: 1;
 }
 
-/* Busca dinâmica (Cliente/CPF) */
+/* Busca dinâmica */
 .search-bar-container {
   display: flex;
   align-items: center;
@@ -149,7 +147,9 @@ select:focus {
   display: none;
 }
 
-.results-list.show { display: block; }
+.results-list.show {
+  display: block;
+}
 
 .results-list li {
   padding: 0.6rem 1rem;
@@ -158,7 +158,9 @@ select:focus {
   cursor: pointer;
 }
 
-.results-list li:hover { background-color: #e4fdf7; }
+.results-list li:hover {
+  background-color: #e4fdf7;
+}
 
 /* Botões */
 button {
@@ -207,9 +209,10 @@ th {
   font-size: 0.9rem;
 }
 
-tbody tr:hover { background-color: #f2f2f2; }
+tbody tr:hover {
+  background-color: #f2f2f2;
+}
 
-/* Campos da tabela */
 #itensTable input[type="number"] {
   width: 90px;
   padding: 0.6rem 1rem;
@@ -230,7 +233,6 @@ tbody tr:hover { background-color: #f2f2f2; }
   font-size: 0.8rem;
 }
 
-/* Campo produto (input + botão dentro da tabela) */
 .produto-group {
   display: flex;
   align-items: center;
@@ -272,16 +274,72 @@ footer {
   border-radius: 10px;
 }
 
+/* ===============================
+   CHECKBOX "PEDIDO PAGO"
+   =============================== */
+/* Caixa menor, estreita e alinhada à direita */
+.pago-group {
+  display: inline-flex;      /* mantém tudo na mesma linha */
+  flex-direction: row;       /* garante alinhamento horizontal */
+  align-items: center;
+  gap: 0.5rem;
+
+  background: #2e9e93;
+  border: 1px solid #cde8e0;
+ padding: 0.4rem 1.2rem;
+  border-radius: 6px;
+  width: fit-content;          /* deixa bem estreito */
+  margin-right: auto;           /* joga o bloco para a direita */
+  margin-top: 0.5rem;
+}
+
+/* Checkbox */
+.pago-group input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #a4dfdf;
+}
+
+/* Label do "Pedido Pago:" */
+.pago-group label {
+  font-weight: 600;
+  color: #01130d;
+  font-size: 1rem;
+  margin: 0;                    /* remove margem extra */
+}
+
+/* Campos que aparecem apenas se marcado */
+.campo-pagamento {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #bbb;
+  background: #ffffff;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #333;
+  display: none;
+}
+
+.pago-group.pago-ativo .campo-pagamento {
+  display: inline-block;
+}
+
+#formaPagamento {
+  min-width: 120px;
+}
+
 /* ==============================
    Responsividade
    ============================== */
 @media (max-width: 768px) {
+
   body { padding: 1rem; }
 
   table, thead, tbody, th, td, tr { display: block; }
   thead tr { position: absolute; top: -9999px; left: -9999px; }
   tr { border: 1px solid #ddd; margin-bottom: 1rem; }
   td { border: none; border-bottom: 1px solid #ddd; position: relative; padding-left: 50%; text-align: right; }
+
   td:before {
     position: absolute;
     left: 1rem;
@@ -293,8 +351,17 @@ footer {
 
   .search-bar-container {
     overflow: visible !important;
-}
+  }
 
+  /* Responsivo do checkbox */
+  .pago-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .campo-pagamento {
+    width: 100%;
+  }
 
   #itensTableBody td:nth-of-type(1):before { content: "ID Pedido"; }
   #itensTableBody td:nth-of-type(2):before { content: "Produto"; }

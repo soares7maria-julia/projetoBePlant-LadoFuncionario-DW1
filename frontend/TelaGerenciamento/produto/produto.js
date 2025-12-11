@@ -262,7 +262,7 @@ function renderizarTabelaProdutos(produtos) {
       <td>${produto.nomeitem}</td>
       <td>${produto.estoqueitem}</td>
       <td>${produto.valorunitario}</td>
-      <td><img src="${API_BASE_URL}/images/${produto.imagemitem || 'sem-imagem.png'}" 
+      <td><img src="${API_BASE_URL}/images/${produto.imagemitem || 'semIimagem.jpg'}" 
                alt="Imagem" style="max-width:80px; border-radius:6px;"></td>
       <td>${produto.nomecategoria || ''}</td>
     `;
